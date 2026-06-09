@@ -1,13 +1,51 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model Valuation {
+  id                      Int      @id @default(autoincrement())
+  publicId                String      @unique @default(uuid())
+  department              String
+  municipality            String
+  zone                    String
+  exactAddress            String?
+  postalCode              Int?
+  type                    String
+  condition               String
+  areaM2                  Float
+  landAreaM2              Float?
+  levels                  Int
+  yearBuilt               Int
+  bedrooms                Int
+  bathrooms               Int
+  parkingSpaces           Int?
+  kitchenType             String
+  hasLivingDiningRoom     Boolean?
+  hasLaundryRoom          Boolean?
+  hasStorageCellar        Boolean?
+  hasStudioHomeOffice     Boolean?
+  hasServiceQuarter       Boolean?
+  hasAC                   Boolean?
+  hasSmartHome            Boolean?
+  hasPool                 Boolean?
+  hasSecurityGate         Boolean?
+  hasCCTV                 Boolean?
+  hasGym                  Boolean?
+  hasElevator             Boolean?
+  hasGreenAreas           Boolean?
+  hasOtherAmenity         Boolean?
+  otherAmenityDescription String?
+  publicDescription       String?
+  maintenanceFee          Float?
+  petsAllowed             String?
+  includedServices        String?
+  estimatedMin            Float
+  estimatedMax            Float
+  estimatedValue          Float
+  pricePerM2              Float
+  createdAt               DateTime @default(now())
 }
