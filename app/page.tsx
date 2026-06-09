@@ -1,65 +1,138 @@
+'use client'
 import Image from "next/image";
+import { TypeAnimation } from "react-type-animation";
+import LandingFooter from "@/components/layout/footers/landingFooter";
+
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div className="flex flex-col bg-zinc-50 font-sans dark:bg-black">
+     
+
+      <section className="relative w-full h-[70vh]  md:h-screen overflow-hidden z-1">
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
+          src={"/landing-image.png"}
           priority
+          className="object-fit object-cover"
+          alt={"landing-image"}
+          fill
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+        <div className="absolute inset-0 flex items-center pt-20 md:pt-0r">
+          <div className="px-6 md:px-16 max-w-3xl">
+            <TypeAnimation
+              sequence={[
+                "Find Your Dream",
+                200,
+                "Find Your Dream Land With",
+                200,
+                "Find Your Dream Land With Valtrust",
+              ]}
+              wrapper="h1"
+              cursor={false}
+              speed={50}
+              repeat={0}
+              className="text-white font-bold leading-tight text-5xl sm:text-6xl md:text-7xl"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white w-full flex text-black gap-10 flex-col md:flex-row  items-center justify-center p-5 -mt-30 md:-mt-40 ">
+        <div className="relative w-full md:w-1/3 h-80 rounded-3xl shadow-2xl bg-white p-5 z-12  transition-all duration-300 hover:scale-105">
+          <Image
+            src={"/visualize-homes.png"}
+            alt={"Visualize homes Image"}
+            className="object-contain rounded-lg"
+            fill
+          />
+        </div>
+        <div className="relative w-full md:w-1/3 h-80 rounded-3xl shadow-2xl bg-white p-5 z-12  transition-all duration-300 hover:scale-105">
+          <Image
+            src={"/top-listing.png"}
+            alt={"Top Listing Image"}
+            className="object-contain rounded-lg"
+            fill
+          />
+        </div>
+        <div className="relative w-full md:w-1/3 h-80 rounded-3xl shadow-2xl bg-white p-5 z-12  transition-all duration-300 hover:scale-105">
+          <Image
+            src={"/evaluate-land.png"}
+            alt={"Evaluate Land Image"}
+            className="object-contain rounded-lg"
+            fill
+          />
+        </div>
+      </section>
+
+      <section className="bg-white p-5 text-black flex flex-col min-h-full w-full p-20">
+        <div className="text-lg flex items-center w-full mt-10 justify-start p-10 font-bold font-sans">
+          Explore Our Communities
+        </div>
+
+        <div className="flex flex-col  w-full items-center justify-center md:flex-row gap-10 ">
+          <div className=" w-full md:w-3/6  lg:w-2/6 sm:w-full flex jusify-center flex-col shadow-2xl rounded-lg gap-2 transition-all duration-300 hover:scale-105">
+            <div className="relative w-full  h-70 ">
+              <Image
+                src={"/santa-tecla.png"}
+                alt={"Santa Tecla"}
+                fill
+                className="object-cover rounded-lg"
+              />
+            </div>
+            <h3 className="p-3 font-bold">Santa Tecla</h3>
+            <p className="p-2">Urban Area</p>
+          </div>
+
+          <div className="w-full md:w-3/6 lg:w-2/6 flex jusify-center flex-col shadow-2xl rounded-lg gap-2 transition-all duration-300 hover:scale-105">
+            <div className="relative w-full h-70 ">
+              <Image
+                src={"/santa-ana.png"}
+                alt={"Santa Ana"}
+                fill
+                className="object-cover rounded-lg"
+              />
+            </div>
+            <h3 className="p-3 font-bold">Santa Ana</h3>
+            <p className="p-2">Urban Area</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="flex flex-col md:flex-row items-center justify-center w-full bg-white text-black gap-10 p-10">
+        <div className="w-full lg:w-2/3  flex justify-center items-center flex-col mt-5 gap-5">
+          <h2 className="text-5xl font-bold flex justify-center w-full md:w-2/3 ">
+            About Valtrust
+          </h2>
+          <p className="text-lg md:text-sm w-full  md:w-5/6 sm:p-10">
+            We are a digital platform that modernizes property buying, selling,
+            and valuation in El Salvador through AI and real market data. We
+            connect owners, buyers and investors in a secure and transparent
+            environment, making real state decisions easier and smarter.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+
+        <div className="w-full flex flex-col md:flex-row gap-10 items-center justify-center">
+          <div className="relative w-4/6 md:w-2/6 h-50 transition-all duration-300 hover:scale-105">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+              src={"/casa-1.png"}
+              alt={"Santa Tecla"}
+              fill
+              className="object-cover rounded-lg"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
+          <div className="relative w-4/6 md:w-2/6 h-50 transition-all duration-300 hover:scale-105">
+            <Image
+              src={"/casa-2.png"}
+              alt={"Santa Tecla"}
+              fill
+              className="object-cover rounded-lg"
+            />
+          </div>
         </div>
-      </main>
+      </section>
+
+     <LandingFooter/>
     </div>
   );
 }
