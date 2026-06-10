@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../app/generated/prisma"
 }
 
@@ -46,7 +46,9 @@ model BuyerProfile {
 model SellerProfile {
   clerkId String @id
 
-  fullName String
+  firstName String
+  lastName  String
+
   email    String
   phone    String
 

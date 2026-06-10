@@ -1,10 +1,12 @@
 "use client";
 import LandingFooter from "@/components/layout/footers/landingFooter";
-
-import { useEffect } from "react";
+import LandingNav from "@/components/layout/navbars/landingnav";
+import { useEffect, useState } from "react";
 import Image from "next/image";
+import SellOrBuyPopup from "@/components/layout/selection-popup/Choose";
 
 export default function AboutPage() {
+     const [popupOpen, setPopupOpen] = useState(false);
     useEffect(() => {
         const counters = document.querySelectorAll<HTMLElement>(".counter");
 
@@ -43,7 +45,8 @@ export default function AboutPage() {
 
     return (
     <div className=" mt-30 md:mt-0">
-
+   <LandingNav onSignUpClick={() => setPopupOpen(true)} />
+    <SellOrBuyPopup isOpen={popupOpen} onClose={() => setPopupOpen(false)} />
     {/* HERO */}
     <section className="relative overflow-hidden bg-[#0b1e4a] ">
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#1a6373]/20 rounded-full blur-3xl"></div>
