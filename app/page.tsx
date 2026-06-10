@@ -2,13 +2,14 @@
 import Image from "next/image";
 import { TypeAnimation } from "react-type-animation";
 import LandingFooter from "@/components/layout/footers/landingFooter";
+import LandingNav from "@/components/layout/navbars/landingnav";
 
 
 export default function Home() {
   return (
     <div className="flex flex-col bg-zinc-50 font-sans dark:bg-black">
      
-
+ <LandingNav/>
       <section className="relative w-full h-[70vh]  md:h-screen overflow-hidden z-1">
         <Image
           src={"/landing-image.png"}

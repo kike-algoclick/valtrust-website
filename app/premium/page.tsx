@@ -1,12 +1,13 @@
 "use client"
 import LandingFooter from "@/components/layout/footers/landingFooter";
+import LandingNav from "@/components/layout/navbars/landingnav";
 import { TypeAnimation } from "react-type-animation";
 
 export default function Premium() {
   return (
 <main className="min-h-screen bg-black text-white overflow-hidden md:mt-20 mt-42">
  
- 
+  <LandingNav/>
 <section className="relative">
  
 <div className="absolute inset-0 bg-gradient-to-r from-black via-blue-950 to-black" />

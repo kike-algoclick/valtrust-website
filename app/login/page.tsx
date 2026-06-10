@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useSignIn, useAuth, useUser } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import LandingNav from "@/components/layout/navbars/landingnav";
 
 export default function Login() {
   const { signIn, errors, fetchStatus, } = useSignIn();
@@ -111,6 +112,8 @@ useEffect(() => {
   // --- UI principal de login ---
   return (
     <div className="relative min-h-screen overflow-hidden bg-white">
+         <LandingNav/>
+
       <div className="absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-gradient-to-br from-blue-600 to-blue-400" />
 
       <div className="relative z-10 flex min-h-screen flex-col md:flex-row">

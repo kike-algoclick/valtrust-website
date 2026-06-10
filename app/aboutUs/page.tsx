@@ -1,5 +1,6 @@
 "use client";
 import LandingFooter from "@/components/layout/footers/landingFooter";
+import LandingNav from "@/components/layout/navbars/landingnav";
 
 import { useEffect } from "react";
 import Image from "next/image";
@@ -43,7 +44,7 @@ export default function AboutPage() {
 
     return (
     <div className=" mt-30 md:mt-0">
-
+ <LandingNav/>
     {/* HERO */}
     <section className="relative overflow-hidden bg-[#0b1e4a] ">
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#1a6373]/20 rounded-full blur-3xl"></div>
