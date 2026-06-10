@@ -3,6 +3,8 @@ import Image from "next/image";
 import { useSignIn, useAuth, useUser } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import LandingNav from "@/components/layout/navbars/landingnav";
+import SellOrBuyPopup from "@/components/layout/selection-popup/Choose";
 
 export default function Login() {
   const { signIn, errors, fetchStatus, } = useSignIn();
@@ -15,6 +17,7 @@ export default function Login() {
   const [showClientTrust, setShowClientTrust] = useState(false);
   const [trustCode, setTrustCode] = useState("");
   const role = (user?.unsafeMetadata as { role?: string })?.role;
+   const [popupOpen, setPopupOpen] = useState(false);
 
    const isLoading = fetchStatus === "fetching";
 
@@ -111,6 +114,9 @@ useEffect(() => {
   // --- UI principal de login ---
   return (
     <div className="relative min-h-screen overflow-hidden bg-white">
+           <LandingNav onSignUpClick={() => setPopupOpen(true)} />
+    <SellOrBuyPopup isOpen={popupOpen} onClose={() => setPopupOpen(false)} />
+
       <div className="absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-gradient-to-br from-blue-600 to-blue-400" />
 
       <div className="relative z-10 flex min-h-screen flex-col md:flex-row">
