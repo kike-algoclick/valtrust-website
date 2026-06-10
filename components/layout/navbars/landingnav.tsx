@@ -4,10 +4,12 @@ import { Menu, X, House, SwatchBook, Gem } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { Router } from "next/router";
+interface LandingNavProps {
+  onSignUpClick: () => void;
+}
 
 
-
-export default function LandingNav() {
+export default function LandingNav({ onSignUpClick }: LandingNavProps) {
   const [open, setOpen] = useState(false);
   return (
     <nav className=" fixed top-0 left-0 bg-wh-main text-sm text-black w-full min-height z-50 fixed backdrop-blur-md">
@@ -61,11 +63,11 @@ export default function LandingNav() {
         </div>
 
         <div className="flex justify-center md:flex hidden font-bold items-center w-1/3 gap-5 text-md">
-          <button className="w-1/3 bg-bl-main p-3 rounded-lg text-white">
-           <Link href={"/signup"}>
+          <button className="w-1/3 bg-bl-main p-3 rounded-lg text-white" onClick={onSignUpClick}>
+           
 
           Sign Up
-          </Link>
+         
           </button>
           <button className="w-1/3 bg-zinc-200 p-3 rounded-lg"><Link href={"/login"}>
           Sign In
@@ -109,11 +111,11 @@ export default function LandingNav() {
           Sign In
           </Link>
         </button>
-        <button className="p-5 bg-bl-main  w-1/3 rounded-lg text-white font-bold">
-        <Link href={"/signup"}>
+        <button className="p-5 bg-bl-main  w-1/3 rounded-lg text-white font-bold" onClick={onSignUpClick}>
+        
 
           Sign Up
-          </Link>
+         
         </button>
       </div>
     </nav>

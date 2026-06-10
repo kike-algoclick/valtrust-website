@@ -3,13 +3,16 @@ import Image from "next/image";
 import { TypeAnimation } from "react-type-animation";
 import LandingFooter from "@/components/layout/footers/landingFooter";
 import LandingNav from "@/components/layout/navbars/landingnav";
-
+import { useState } from "react";
+import SellOrBuyPopup from "@/components/layout/selection-popup/Choose";
 
 export default function Home() {
+   const [popupOpen, setPopupOpen] = useState(false);
   return (
     <div className="flex flex-col bg-zinc-50 font-sans dark:bg-black">
      
- <LandingNav/>
+ <LandingNav onSignUpClick={() => setPopupOpen(true)} />
+    <SellOrBuyPopup isOpen={popupOpen} onClose={() => setPopupOpen(false)} />
       <section className="relative w-full h-[70vh]  md:h-screen overflow-hidden z-1">
         <Image
           src={"/landing-image.png"}
