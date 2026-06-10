@@ -5,6 +5,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import Image from "next/image";
 import LandingNav from "@/components/layout/navbars/landingnav";
+import SellOrBuyPopup from "@/components/layout/selection-popup/Choose";
 
 export default function SignUp(){
      const { signUp, errors, fetchStatus } = useSignUp();
@@ -29,9 +30,94 @@ export default function SignUp(){
  
   const isLoading = fetchStatus === "fetching";
 
+   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+ 
+    if (!email || !password) {
+      setErrorMessage("Please complete the form");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setErrorMessage("Invalid Email");
+      return;
+    }
+    setErrorMessage("");
+   
+
+     const { error } = await signUp.password({
+      emailAddress: email.trim(),
+      password,
+      firstName,
+      lastName,
+      // ✅ El rol viene del query param y se guarda en unsafeMetadata de Clerk
+      unsafeMetadata: { role, firstName, lastName },
+    });
+    
+    
+
+    if(error){
+      setErrorMessage(error.message || "There was an error. Please try again");
+      console.error(JSON.stringify(error, null, 2));
+      return;
+    }
+
+     await signUp.verifications.sendEmailCode();
+    setPendingVerification(true);
+   }
+
+   const handleVerify = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setErrorMessage("")
+    console.log("email sent")
+
+    if (code === "") {
+      setErrorMessage("Please enter the verification code");
+      return;
+    }
+
+    const { error } = await signUp.verifications.verifyEmailCode({ code });
+    if (error) {
+      setErrorMessage(error.message || "Invalid code, please try again");
+      console.error(JSON.stringify(error, null, 2));
+      return;
+    }
+
+
+    if (signUp.status === "complete") {
+      await signUp.finalize({
+        navigate: async () => {
+          //Hace llamada a la api para subir datos a supabase
+         
+
+          // ✅ Redirige según el rol elegido
+          router.push(role === "seller" ? "/seller/terms" : "/buyer/terms");
+        },
+      });
+    } else {
+      setErrorMessage("There was an error. Please try again");
+      console.log("Status:", signUp.status);
+    }
+  };
+ 
+  // Guard después de los handlers
+  if (isSignedIn) {
+    router.push("/");
+    return null;
+  }
+   if (!roleParam) {
+    router.push("/");
+    return null;
+  }
+   
+
   return(
     <div className="relative min-h-screen overflow-hidden bg-white">
         <LandingNav onSignUpClick={() => setPopupOpen(true)} />
+    <SellOrBuyPopup isOpen={popupOpen} onClose={() => setPopupOpen(false)} />
       <div className="absolute -bottom-28 -left-28 w-72 h-72 rounded-full bg-gradient-to-br from-[#2563eb] to-[#60a5fa] z-0" />
  
       <div className="relative z-10 min-h-screen flex flex-col md:flex-row w-full">
@@ -57,13 +143,13 @@ export default function SignUp(){
               </div>
  
               {errorMessage !== "" && (
-                <div className="flex justify-center bg-red-200 border-solid border-2 border-red-400 text-black text-center rounded-md mb-3 h-10 items-center">
+                <div className="flex justify-center mb-4 rounded-md bg-red-50 px-4 py-2 text-sm text-red-600 text-center h-10 items-center">
                   <p className="w-7/8">{errorMessage}</p>
                   <X size={12} className="w-1/8 cursor-pointer" onClick={() => setErrorMessage("")} />
                 </div>
               )}
  
-              <form  className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div id="clerk-captcha" />
  
                 <input
@@ -147,6 +233,7 @@ export default function SignUp(){
  
               <form
                 className="flex items-center justify-center gap-10 flex-col w-full max-w-sm"
+                onSubmit={handleVerify}
                 
               >
                 <input
