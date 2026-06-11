@@ -115,7 +115,7 @@ export default function SignUp(){
    
 
   return(
-    <div className="relative min-h-screen overflow-hidden bg-white">
+    <div className="relative min-h-screen overflow-hidden bg-white mt-20">
         <LandingNav onSignUpClick={() => setPopupOpen(true)} />
     <SellOrBuyPopup isOpen={popupOpen} onClose={() => setPopupOpen(false)} />
       <div className="absolute -bottom-28 -left-28 w-72 h-72 rounded-full bg-gradient-to-br from-[#2563eb] to-[#60a5fa] z-0" />
@@ -125,7 +125,7 @@ export default function SignUp(){
           <div className="w-full md:w-1/2 min-h-screen flex items-center justify-center px-6 sm:px-10 lg:px-24 py-10">
             <div className="w-full max-w-md -mt-10">
               <Image
-                src={"/valtrust-isologo.png"}
+                src={"/LogosValtrust/valtrust-isologo.png"}
                 alt={"Valtrust Isologo"}
                 height={200}
                 width={200}
@@ -219,7 +219,7 @@ export default function SignUp(){
           <div className="relative z-10 min-h-screen flex flex-col md:flex-row w-full -mt-10">
             <div className="w-full md:w-1/2 min-h-screen flex-col flex items-center justify-center md:ml-[30%]">
               <Image
-                src={"/valtrust-isologo.png"}
+                src={"/LogosValtrust/valtrust-isologo.png"}
                 alt={"Valtrust Isologo"}
                 height={200}
                 width={200}
@@ -270,7 +270,7 @@ export default function SignUp(){
           <div className="absolute -bottom-28 -right-16 w-[320px] h-[320px] rounded-full bg-[#14337e]" />
           <div className="relative z-10 text-center text-white mb-10 ml-10">
             <Image
-              src={"/valtrust-isologo-white.png"}
+              src={"/LogosValtrust/valtrust-isologo-white.png"}
               alt={"Valtrust Isologo"}
               height={200}
               width={200}
