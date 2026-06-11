@@ -1,142 +1,241 @@
 'use client'
+import React from "react";
 import Image from "next/image";
 import { TypeAnimation } from "react-type-animation";
 import LandingFooter from "@/components/layout/footers/landingFooter";
 import LandingNav from "@/components/layout/navbars/landingnav";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SellOrBuyPopup from "@/components/layout/selection-popup/Choose";
+import { Eye, List, BarChart2 } from "lucide-react";
+
+
+function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className={`
+        relative rounded-2xl p-7 cursor-pointer overflow-hidden
+        border transition-all duration-300 group
+        ${hovered
+          ? "bg-[#0F1E3C] border-[#0F1E3C] shadow-2xl -translate-y-1"
+          : "bg-white border-zinc-100 shadow-sm hover:shadow-md"}
+      `}
+    >
+      <div className={`
+        w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-5
+        transition-colors duration-300
+        ${hovered ? "bg-white/10" : "bg-[#0F1E3C]/5"}
+      `}>
+        {icon}
+      </div>
+      <h3 className={`font-bold text-lg mb-2 transition-colors duration-300 ${hovered ? "text-white" : "text-[#0F1E3C]"}`}>
+        {title}
+      </h3>
+      <p className={`text-sm leading-relaxed transition-colors duration-300 ${hovered ? "text-white/60" : "text-zinc-500"}`}>
+        {description}
+      </p>
+    </div>
+  );
+}
+
+function CommunityCard({ name, tag, imageSrc }: { name: string; tag: string; imageSrc: string }) {
+  return (
+    <div className="group rounded-2xl overflow-hidden bg-white shadow-sm border border-zinc-100 cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
+      <div className="relative w-full h-52 overflow-hidden">
+        <Image
+          src={imageSrc}
+          alt={name}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+      </div>
+      <div className="p-4">
+        <h3 className="font-bold text-[#0F1E3C] text-base">{name}</h3>
+        <span className="inline-block mt-2 bg-[#0F1E3C]/6 text-[#0F1E3C]/70 text-xs font-semibold px-3 py-1 rounded-full">
+          {tag}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
-   const [popupOpen, setPopupOpen] = useState(false);
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <div className="flex flex-col bg-zinc-50 font-sans dark:bg-black">
-     
- <LandingNav onSignUpClick={() => setPopupOpen(true)} />
-    <SellOrBuyPopup isOpen={popupOpen} onClose={() => setPopupOpen(false)} />
-      <section className="relative w-full h-[70vh]  md:h-screen overflow-hidden z-1">
+      <LandingNav onSignUpClick={() => setPopupOpen(true)} />
+      <SellOrBuyPopup isOpen={popupOpen} onClose={() => setPopupOpen(false)} />
+
+      {/* ── HERO ── */}
+      <section className="relative w-full h-[80vh] md:h-screen overflow-hidden">
         <Image
-          src={"/landing-image.png"}
+          src="/landing-image.png"
           priority
-          className="object-fit object-cover"
-          alt={"landing-image"}
+          className="object-cover"
+          alt="landing-image"
           fill
         />
 
-        <div className="absolute inset-0 flex items-center pt-20 md:pt-0r">
-          <div className="px-6 md:px-16 max-w-3xl">
-            <TypeAnimation
-              sequence={[
-                "Find Your Dream",
-                200,
-                "Find Your Dream Land With",
-                200,
-                "Find Your Dream Land With Valtrust",
-              ]}
-              wrapper="h1"
-              cursor={false}
-              speed={50}
-              repeat={0}
-              className="text-white font-bold leading-tight text-5xl sm:text-6xl md:text-7xl"
-            />
-          </div>
-        </div>
-      </section>
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
 
-      <section className="bg-white w-full flex text-black gap-10 flex-col md:flex-row  items-center justify-center p-5 -mt-30 md:-mt-40 ">
-        <div className="relative w-full md:w-1/3 h-80 rounded-3xl shadow-2xl bg-white p-5 z-12  transition-all duration-300 hover:scale-105">
-          <Image
-            src={"/visualize-homes.png"}
-            alt={"Visualize homes Image"}
-            className="object-contain rounded-lg"
-            fill
+        {/* Content */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center pt-20">
+          <TypeAnimation
+            sequence={[
+              "Find Your Dream",
+              200,
+              "Find Your Dream Land With",
+              200,
+              "Find Your Dream Land With Valtrust",
+            ]}
+            wrapper="h1"
+            cursor={false}
+            speed={50}
+            repeat={0}
+            className="text-white font-extrabold leading-tight text-5xl sm:text-6xl md:text-7xl max-w-3xl"
           />
-        </div>
-        <div className="relative w-full md:w-1/3 h-80 rounded-3xl shadow-2xl bg-white p-5 z-12  transition-all duration-300 hover:scale-105">
-          <Image
-            src={"/top-listing.png"}
-            alt={"Top Listing Image"}
-            className="object-contain rounded-lg"
-            fill
-          />
-        </div>
-        <div className="relative w-full md:w-1/3 h-80 rounded-3xl shadow-2xl bg-white p-5 z-12  transition-all duration-300 hover:scale-105">
-          <Image
-            src={"/evaluate-land.png"}
-            alt={"Evaluate Land Image"}
-            className="object-contain rounded-lg"
-            fill
-          />
-        </div>
-      </section>
 
-      <section className="bg-white p-5 text-black flex flex-col min-h-full w-full p-20">
-        <div className="text-lg flex items-center w-full mt-10 justify-start p-10 font-bold font-sans">
-          Explore Our Communities
-        </div>
-
-        <div className="flex flex-col  w-full items-center justify-center md:flex-row gap-10 ">
-          <div className=" w-full md:w-3/6  lg:w-2/6 sm:w-full flex jusify-center flex-col shadow-2xl rounded-lg gap-2 transition-all duration-300 hover:scale-105">
-            <div className="relative w-full  h-70 ">
-              <Image
-                src={"/santa-tecla.png"}
-                alt={"Santa Tecla"}
-                fill
-                className="object-cover rounded-lg"
-              />
-            </div>
-            <h3 className="p-3 font-bold">Santa Tecla</h3>
-            <p className="p-2">Urban Area</p>
-          </div>
-
-          <div className="w-full md:w-3/6 lg:w-2/6 flex jusify-center flex-col shadow-2xl rounded-lg gap-2 transition-all duration-300 hover:scale-105">
-            <div className="relative w-full h-70 ">
-              <Image
-                src={"/santa-ana.png"}
-                alt={"Santa Ana"}
-                fill
-                className="object-cover rounded-lg"
-              />
-            </div>
-            <h3 className="p-3 font-bold">Santa Ana</h3>
-            <p className="p-2">Urban Area</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="flex flex-col md:flex-row items-center justify-center w-full bg-white text-black gap-10 p-10">
-        <div className="w-full lg:w-2/3  flex justify-center items-center flex-col mt-5 gap-5">
-          <h2 className="text-5xl font-bold flex justify-center w-full md:w-2/3 ">
-            About Valtrust
-          </h2>
-          <p className="text-lg md:text-sm w-full  md:w-5/6 sm:p-10">
-            We are a digital platform that modernizes property buying, selling,
-            and valuation in El Salvador through AI and real market data. We
-            connect owners, buyers and investors in a secure and transparent
-            environment, making real state decisions easier and smarter.
+          <p className="mt-5 text-white/65 text-lg max-w-xl leading-relaxed">
+            AI-powered valuations and curated listings — buy, sell, and invest with confidence.
           </p>
+
+          {/* CTA buttons */}
+          <div className="flex flex-wrap gap-4 mt-8 justify-center">
+            <button
+              onClick={() => setPopupOpen(true)}
+              className="bg-[#0F1E3C] hover:bg-[#1a2f5a] text-white font-semibold px-8 py-3.5 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl"
+            >
+              Get started
+            </button>
+            <button className="bg-white/15 backdrop-blur-md hover:bg-white/25 text-white font-semibold px-8 py-3.5 rounded-xl border border-white/25 transition-all duration-200">
+              Browse listings
+            </button>
+          </div>
         </div>
 
-        <div className="w-full flex flex-col md:flex-row gap-10 items-center justify-center">
-          <div className="relative w-4/6 md:w-2/6 h-50 transition-all duration-300 hover:scale-105">
-            <Image
-              src={"/casa-1.png"}
-              alt={"Santa Tecla"}
-              fill
-              className="object-cover rounded-lg"
+
+      </section>
+
+      {/* ── FEATURE CARDS ── */}
+      <section className="bg-white w-full py-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-xs font-bold text-white/50 tracking-widest uppercase text-center mb-2">What we offer</p>
+          <h2 className="text-3xl font-bold text-[#0F1E3C] text-center mb-12">Everything you need</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <FeatureCard
+              icon="🏠"
+              title="Visualize homes"
+              description="Explore properties with immersive virtual tours and detailed photo galleries before visiting."
             />
-          </div>
-          <div className="relative w-4/6 md:w-2/6 h-50 transition-all duration-300 hover:scale-105">
-            <Image
-              src={"/casa-2.png"}
-              alt={"Santa Tecla"}
-              fill
-              className="object-cover rounded-lg"
+            <FeatureCard
+              icon="📋"
+              title="Top listings"
+              description="Curated properties updated daily, filtered by location, price range, and property type."
+            />
+            <FeatureCard
+              icon="📊"
+              title="Evaluate land"
+              description="AI-driven valuation using real market data to help you make smarter investment decisions."
             />
           </div>
         </div>
       </section>
 
-     <LandingFooter/>
+      {/* ── COMMUNITIES ── */}
+      <section className="bg-zinc-50 py-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-xs font-bold text-white/50 tracking-widest uppercase text-center mb-2">Explore</p>
+          <h2 className="text-3xl font-bold text-[#0F1E3C] text-center mb-12">Our communities</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+            <CommunityCard
+              name="Santa Tecla"
+              tag="Urban area"
+              imageSrc="/santa-tecla.png"
+            />
+            <CommunityCard
+              name="Santa Ana"
+              tag="Urban area"
+              imageSrc="/santa-ana.png"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── ABOUT ── */}
+      <section className="bg-white py-20 px-6">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
+          {/* Text */}
+          <div className="flex-1 flex flex-col gap-5">
+            <p className="text-xs font-bold text-white/50 tracking-widest uppercase">About Valtrust</p>
+            <h2 className="text-4xl font-extrabold text-[#0F1E3C] leading-tight">
+              Smarter real estate,<br />built for El Salvador
+            </h2>
+            <p className="text-zinc-500 leading-relaxed">
+              We are a digital platform that modernizes property buying, selling, and valuation in
+              El Salvador through AI and real market data. We connect owners, buyers, and investors
+              in a secure and transparent environment — making real estate decisions easier and smarter.
+            </p>
+            <button
+              onClick={() => setPopupOpen(true)}
+              className="self-start bg-[#0F1E3C] hover:bg-[#1a2f5a] text-white font-semibold px-7 py-3 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg mt-2"
+            >
+              Join Valtrust →
+            </button>
+          </div>
+
+          {/* Images */}
+          <div className="flex-1 grid grid-cols-2 gap-4">
+            <div className="relative h-56 rounded-2xl overflow-hidden shadow-md group">
+              <Image
+                src="/casa-1.png"
+                alt="Property 1"
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            </div>
+            <div className="relative h-56 rounded-2xl overflow-hidden shadow-md group mt-8">
+              <Image
+                src="/casa-2.png"
+                alt="Property 2"
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA BANNER ── */}
+      <section className="bg-[#0F1E3C] py-16 px-6 text-center">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
+          Ready to find your dream property?
+        </h2>
+        <p className="text-white/55 text-lg mb-8 max-w-md mx-auto">
+          Start buying, selling, or valuing property today.
+        </p>
+        <button
+          onClick={() => setPopupOpen(true)}
+          className="bg-white text-[#0F1E3C] font-bold px-10 py-4 rounded-xl hover:bg-zinc-100 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl text-base"
+        >
+          Get started for free
+        </button>
+      </section>
+
+      <LandingFooter />
     </div>
   );
 }
