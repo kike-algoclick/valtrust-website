@@ -29,16 +29,20 @@ export default function SellerNav() {
 
         <div className="md:block hidden w-2/3 md:text-md ">
           <ul className="flex justify-end items-center gap-2">
-            <li className="hover:bg-zinc-300 p-3 rounded-2xl w-2/9 flex justify-center">
+            <li className="hover:bg-zinc-300 p-3 rounded-4xl w-2/9 flex justify-center ">
             <Link href={"/seller"}>
               Home
               </Link>
             </li>
+
             <li className="hover:bg-zinc-300 p-3 rounded-2xl w-2/9 flex justify-center ">
               Marketplace
             </li>
             <li className="hover:bg-zinc-300 p-3 rounded-2xl w-2/9 flex justify-center ">
+            
+            <Link href={"/seller/Valuation"}>
               Valuation
+          </Link>
             </li>
             <li className="hover:bg-zinc-300 p-3 rounded-2xl w-2/9 flex justify-center ">
               Premium
@@ -48,13 +52,15 @@ export default function SellerNav() {
 
         <div className="flex flex w-full justify-end md:hidden items-center">
           <button className="flex justify-center items-center rounded-full w-1/9 h-14">
-        {<button className=" w-1/3 gap-2 flex items-center justify-center rounded-lg rounded-full scale-170">
+            {<div className=" w-1/3 gap-2 flex items-center justify-center rounded-lg rounded-full scale-170">
              <UserButton appearance={{
           elements: {
             avatarBox: "w-100 h-100",
           },
         }} />
-            </button>}
+            </div>}
+
+        
 
           </button>
           <button
