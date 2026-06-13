@@ -56,7 +56,7 @@ export default function AboutPage() {
 
         <div>
             <Image
-                src="/valtrust-isologo-white.png"
+                src="/LogosValtrust/valtrust-isologo-white.png"
                 alt="ValTrust Logo"
                 width={250}
                 height={250}

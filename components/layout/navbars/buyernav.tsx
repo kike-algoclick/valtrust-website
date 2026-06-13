@@ -56,10 +56,7 @@ export default function SellerNav() {
         
 
           </button>
-          <button className="flex justify-center items-center rounded-full w-1/9 h-14">
-       
-
-          </button>
+        
           <button
             className="text-3xl md:hidden w-1-2 justify-end items-center p-5 flex items-center flex-3z-50 z-20"
             onClick={() => setOpen(!open)}

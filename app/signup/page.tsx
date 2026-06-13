@@ -91,7 +91,9 @@ export default function SignUp(){
       await signUp.finalize({
         navigate: async () => {
           //Hace llamada a la api para subir datos a supabase
-         
+         await fetch("/api/create-user", {
+  method: "POST",
+});
 
           // ✅ Redirige según el rol elegido
           router.push(role === "seller" ? "/seller/terms" : "/buyer/terms");
