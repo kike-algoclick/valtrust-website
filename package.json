@@ -8,8 +8,7 @@
     "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "lint": "eslint"
   },
   "dependencies": {
     "@clerk/nextjs": "7.3.3",
