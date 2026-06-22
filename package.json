@@ -6,7 +6,7 @@
     "frontend": "next dev",
     "backend": "python ocr.py",
     "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint"
   },
