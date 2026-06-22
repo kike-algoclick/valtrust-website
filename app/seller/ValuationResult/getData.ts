@@ -13,7 +13,7 @@ export async function getValuationData(publicId: string) {
     try {
         const valuation = await prisma.valuation.findUnique({
             where: {
-                publicId,
+                publicId: publicId
             },
         });
 

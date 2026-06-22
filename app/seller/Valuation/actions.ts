@@ -127,6 +127,7 @@ export type ValuationInput = {
 };
 
 export type ValuationResult = {
+    id: number;
     publicId: string;
     estimatedValue: number;
     estimatedMin: number;
@@ -220,5 +221,5 @@ export async function calculateValuation(input: ValuationInput): Promise<Valuati
 
     await prisma.$disconnect();
 
-    return { publicId: valuation.publicId, estimatedValue, estimatedMin, estimatedMax, pricePerM2 };
+    return { id:valuation.id, publicId: valuation.publicId, estimatedValue, estimatedMin, estimatedMax, pricePerM2 };
 }
