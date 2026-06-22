@@ -352,7 +352,7 @@ export default function Sellers({ isOpen, onClose,propertyId, valuationId, publi
     duiFiles.forEach((file) => data.append("dui", file));
 
     // ── 2. OCR (Flask) ───────────────────────────────────
-    const res = await fetch("http://127.0.0.1:5000/upload", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload`, {
       method: "POST",
       body: data,
     });
