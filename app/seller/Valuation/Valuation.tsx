@@ -4,6 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import { ZONES } from "./zones";
 import { useRouter, useSearchParams } from "next/navigation";
 import { calculateValuation } from "./actions";
+import Sellers from "@/components/layout/sellers-verification/MainComponent";
+
+type Step = "valuation" | "verify-property" | "publish";
 
 export type ValuationFormInput = {
     department: string;
@@ -125,6 +128,11 @@ function ToggleChip({ name, label, checked, onChange }: {
 
 // ── CAMBIO 1: recibe sellerClerkId como prop ──
 export default function Valuation({ sellerClerkId }: { sellerClerkId?: string }) {
+
+    const [step, setStep] = useState<Step>("valuation");
+    const [valuationId, setValuationId] = useState<number | null>(null);
+    const [valuationPublicId, setValuationPublicId] = useState<string | null>(null);
+
     const [form, setForm] = useState<ValuationFormInput>(EMPTY_FORM);
     const [errors, setErrors] = useState<Partial<Record<keyof ValuationFormInput, string>>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -185,27 +193,50 @@ export default function Valuation({ sellerClerkId }: { sellerClerkId?: string })
         return Object.keys(e).length === 0;
     }
 
-    async function handleSubmit() {
-        if (!validate()) return;
-        const now = Date.now();
-        submitTimestamps.current = submitTimestamps.current.filter((t) => now - t < SUBMIT_WINDOW_MS);
-        if (submitTimestamps.current.length >= SUBMIT_LIMIT) {
-            alert("Too many requests. Please wait a moment before trying again.");
-            return;
-        }
-        submitTimestamps.current.push(now);
-        setIsSubmitting(true);
-        try {
-            // ── CAMBIO 2: pasa sellerClerkId al action ──
-            const result = await calculateValuation({ ...form, sellerClerkId });
-            if (result?.publicId) router.push(`/seller/ValuationResult?id=${result.publicId}`);
-        } catch (err) {
-            console.error(err);
-            alert("Something went wrong while saving your house estimate.");
-        } finally {
-            setIsSubmitting(false);
-        }
+async function handleSubmit() {
+    if (!validate()) return;
+
+    const now = Date.now();
+    submitTimestamps.current = submitTimestamps.current.filter(
+        (t) => now - t < SUBMIT_WINDOW_MS
+    );
+
+    if (submitTimestamps.current.length >= SUBMIT_LIMIT) {
+        alert("Too many requests. Please wait a moment before trying again.");
+        return;
     }
+
+    submitTimestamps.current.push(now);
+    setIsSubmitting(true);
+
+    try {
+        // guardas el resultado de la valuación
+        
+        const result = await calculateValuation({
+            ...form,
+            sellerClerkId,
+        });
+
+        if (result?.publicId) {
+
+            setValuationId(result.id);
+            setValuationPublicId(result.publicId); 
+
+            sessionStorage.setItem(
+            "propertyId",
+            result.publicId
+            );
+
+            setStep("verify-property");
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("Something went wrong while saving your house estimate.");
+    } finally {
+        setIsSubmitting(false);
+    }
+}
 
     const inputCls = (field: keyof ValuationFormInput) =>
         `bg-white/10 border ${errors[field] ? "border-red-400" : "border-white/20"} focus:border-white/50 focus:bg-white/15 outline-none w-full h-9 px-3 text-white text-sm rounded-lg placeholder:text-white/30 transition-colors`;
@@ -214,8 +245,11 @@ export default function Valuation({ sellerClerkId }: { sellerClerkId?: string })
         `bg-[#0B1E4A] border ${errors[field] ? "border-red-400" : "border-white/20"} focus:border-white/50 outline-none w-full h-9 px-3 text-white text-sm rounded-lg transition-colors appearance-none cursor-pointer`;
 
     return (
+        
         <section className="flex flex-col items-center bg-gray-50 py-8 sm:py-12 px-4 min-h-screen mt-17">
-            <div className="flex flex-col items-center w-full max-w-lg gap-y-6 sm:gap-y-8">
+            {step === "valuation" && (
+            <>
+               <div className="flex flex-col items-center w-full max-w-lg gap-y-6 sm:gap-y-8">
 
                 {/* Hero header */}
                 <div className="flex flex-col items-center text-center gap-y-3 sm:gap-y-4 w-full">
@@ -610,6 +644,15 @@ export default function Valuation({ sellerClerkId }: { sellerClerkId?: string })
                 </div>
 
             </div>
+            </>
+        )}
+            <Sellers
+                isOpen={step === "verify-property"}
+                onClose={() => setStep("valuation")}
+                propertyId="123"
+                valuationId={valuationId}
+                publicid={valuationPublicId}
+            />
         </section>
     );
 }

@@ -8,6 +8,7 @@ export default async function ValuationResult({
 }) {
     const { id } = await searchParams;
     const valuation = await getValuationData(id);
+     console.log("VALUATION OBJ:", valuation);
 
     if (!valuation)
         return (
@@ -82,6 +83,15 @@ export default async function ValuationResult({
         needs_renovation: "bg-red-50 text-red-700 border border-red-200",
     };
 
+    const verificationLabel: Record<string, string> = {
+        valuation_verified: "Verified",
+        unverified: "Unverified",
+    };
+    const verificationColors: Record<string, string> = {
+        valuation_verified: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+        unverified: "bg-gray-100 text-gray-600 border border-gray-200",
+    };
+
     const conditionLabel: Record<string, string> = {
         brand_new: "Brand New",
         excellent: "Excellent",
@@ -109,6 +119,13 @@ export default async function ValuationResult({
             isCondition: true,
             conditionKey: valuation.condition,
         },
+         {
+        label: "Verification",
+        icon: "/ValuationResult/star-icon.png",
+        value: verificationLabel[valuation.verificationStatus ?? "unverified"] ?? "Unverified",
+        isCondition: true,
+        conditionKey: valuation.verificationStatus ?? "unverified",
+    },
     ];
 
     // Raw valuation fields to pre-fill the form when editing
@@ -154,7 +171,7 @@ export default async function ValuationResult({
             valuation={valuation}
             factors={factors}
             overviewFields={overviewFields}
-            conditionColors={conditionColors}
+            conditionColors={{ ...conditionColors, ...verificationColors }}
             rawValuation={rawValuation}
         />
     );

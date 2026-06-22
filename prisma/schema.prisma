@@ -85,6 +85,7 @@ model Valuation {
   pricePerM2              Float
   createdAt               DateTime       @default(now())
   updatedAt               DateTime       @updatedAt
+  verificationStatus      String?        @default("unverified")
   property                Property?
   seller                  SellerProfile? @relation(fields: [sellerClerkId], references: [clerkId])
 

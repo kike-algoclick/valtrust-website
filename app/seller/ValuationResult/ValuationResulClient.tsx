@@ -60,6 +60,8 @@ export default function ValuationResultClient({
     const [pinPercent, setPinPercent] = useState(initialPercent);
     const [openFactor, setOpenFactor] = useState<string | null>(null);
     const [generatingPDF, setGeneratingPDF] = useState(false);
+    const [propertyTitle, setPropertyTitle] = useState("");
+    const [isPublishing, setIsPublishing] = useState(false);
     const trackRef = useRef<HTMLDivElement>(null);
     const isDragging = useRef(false);
 
@@ -326,6 +328,39 @@ export default function ValuationResultClient({
             setGeneratingPDF(false);
         }
     }
+    async function handlePublish() {
+        if (!propertyTitle.trim()) {
+            alert("Please enter a title for your property before publishing.");
+            return;
+        }
+
+        setIsPublishing(true);
+
+        try {
+            const res = await fetch("/api/property/create-from-valuation", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    valuationId: valuation.id,
+                    title: propertyTitle.trim(),
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data?.error || "Failed to publish property");
+            }
+
+            router.push(`/property/${data.property.id}`);
+
+        } catch (err) {
+            console.error("PUBLISH ERROR:", err);
+            alert("Something went wrong while publishing your property. Please try again.");
+        } finally {
+            setIsPublishing(false);
+        }
+    }
 
     return (
         <section className="min-h-screen bg-gray-50 py-6 sm:py-10 px-3 sm:px-4 mt-15">
@@ -564,7 +599,46 @@ export default function ValuationResultClient({
                         </div>
                     </div>
                 </div>
+                {/* ── Publish Property ── */}
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 flex flex-col gap-y-4">
+                    <div>
+                        <p className="text-sm font-semibold text-gray-800">Ready to publish?</p>
+                        <p className="text-[11px] text-gray-400 mt-0.5">
+                            Give your property a title to publish it as a live listing.
+                        </p>
+                    </div>
 
+                    <div>
+                        <label className="text-black text-[11px] font-medium tracking-[0.08em] uppercase mb-1 block text-gray-500">
+                            Property Title
+                        </label>
+                        <input
+                            value={propertyTitle}
+                            onChange={(e) => setPropertyTitle(e.target.value)}
+                            type="text"
+                            placeholder="e.g. Beautiful 3-bedroom house in Santa Tecla"
+                            className="bg-gray-50 text-gray-900 border border-gray-200 focus:border-gray-400 outline-none w-full h-10 px-3 text-sm rounded-lg placeholder:text-gray-400 transition-colors"
+                        />
+                    </div>
+
+                    <button
+                        onClick={handlePublish}
+                        disabled={isPublishing}
+                        className="flex items-center justify-center gap-2 bg-[#0B1E4A]  hover:bg-[#0D2860]  w-full h-12 text-white text-sm font-semibold rounded-xl cursor-pointer transition-colors"
+                    >
+                            {isPublishing ? (
+                             <span className="flex items-center justify-center gap-2">
+                                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                            </svg>
+                            Publishing…
+                        </span>
+                            ) : (
+                            "Publish Property"
+                        )}
+                    </button>
+                </div>
             </div>
         </section>
     );
