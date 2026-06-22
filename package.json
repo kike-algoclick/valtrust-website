@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "prisma generate",
     "frontend": "next dev",
     "backend": "python ocr.py",
     "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
@@ -57,6 +58,6 @@
     "node": "24.16.0",
     "npm": "11.16.0"
   },"engines": {
-  "node": "20.x"
+  "node": "24.x"
 }
 }
