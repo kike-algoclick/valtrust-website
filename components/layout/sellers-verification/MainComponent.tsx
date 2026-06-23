@@ -349,7 +349,6 @@ export default function Sellers({ isOpen, onClose,propertyId, valuationId, publi
 
     deedFiles.forEach((file) => data.append("deed", file));
     excerptFiles.forEach((file) => data.append("excerpt", file));
-    duiFiles.forEach((file) => data.append("dui", file));
 
     // ── 2. OCR (Flask) ───────────────────────────────────
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload`, {

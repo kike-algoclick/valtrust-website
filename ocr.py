@@ -15,6 +15,7 @@ CORS(app)
 # CONFIG
 # ─────────────────────────────
 PDF_DPI = 100          # antes 150. Menos memoria y menos tiempo de OCR.
+MAX_IMAGE_WIDTH = 1600 # fotos de celular vienen mucho más grandes; las limitamos
 BLUR_THRESHOLD = 150
 MIN_READABLE_CHARS = 30
 MIN_CONFIDENCE = 40
@@ -29,6 +30,36 @@ def blurry_image(image, threshold=BLUR_THRESHOLD):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     score = cv2.Laplacian(gray, cv2.CV_64F).var()
     return score < threshold, score
+
+
+def resize_if_too_large(img, max_width=MAX_IMAGE_WIDTH):
+    """
+    Las fotos de celular (DUI, cédulas, etc.) suelen venir a resoluciones
+    muy altas (12MP+), mucho más grandes de lo que Tesseract necesita para
+    leer texto. Esto puede causar timeouts/OOM en CPUs débiles.
+    Redimensionamos manteniendo proporción si excede max_width.
+    """
+    height, width = img.shape[:2]
+
+    if width <= max_width:
+        return img
+
+    scale = max_width / width
+    new_width = max_width
+    new_height = int(height * scale)
+
+    resized = cv2.resize(
+        img,
+        (new_width, new_height),
+        interpolation=cv2.INTER_AREA
+    )
+
+    print(
+        f"Imagen redimensionada de {width}x{height} a {new_width}x{new_height}",
+        flush=True
+    )
+
+    return resized
 
 
 def get_ocr_text_and_confidence(gray):
@@ -145,6 +176,8 @@ def process_file(file):
         if img is None:
             raise Exception(f"Could not read {file.filename}")
 
+        img = resize_if_too_large(img)
+
         blurry, score = blurry_image(img)
         print("blur score", score, flush=True)
 
@@ -197,21 +230,17 @@ def upload():
 
         deed_file = request.files.get("deed")
         excerpt_file = request.files.get("excerpt")
-        dui_file = request.files.get("dui")
 
         print("DEED:", deed_file, flush=True)
         print("EXCERPT:", excerpt_file, flush=True)
-        print("DUI:", dui_file, flush=True)
 
         deed_text = process_file(deed_file)
         excerpt_text = process_file(excerpt_file)
-        dui_text = process_file(dui_file)
 
         return jsonify({
             "success": True,
             "deedText": deed_text,
-            "excerptText": excerpt_text,
-            "duiText": dui_text
+            "excerptText": excerpt_text
         })
 
     except Exception as e:
