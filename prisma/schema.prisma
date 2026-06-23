@@ -179,6 +179,7 @@ model SiteComment {
   lastName  String?
   id        BigInt   @id @default(autoincrement())
   rating    Int?     @db.SmallInt
+  imageUrl  String?
 
   @@index([clerkId])
 }

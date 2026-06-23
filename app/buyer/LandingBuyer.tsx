@@ -1,10 +1,19 @@
 "use client";
 import { useState } from "react";
 import { TypeAnimation } from "react-type-animation";
+import { useEffect } from "react";
 
 const departments    = ["San Salvador", "La Libertad", "Santa Ana", "Sonsonate"];
 const municipalities = ["Santa Tecla", "Antiguo Cuscatlán", "Mejicanos", "Soyapango"];
 const zones          = ["Zona Rosa", "Escalón", "San Benito", "Merliot"];
+
+type Review = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  comment: string;
+  rating: number;
+};
 
 export default function LandingBuyer({ listings }: { listings: React.ReactNode }) {
   const [search,       setSearch]       = useState("");
@@ -15,16 +24,22 @@ export default function LandingBuyer({ listings }: { listings: React.ReactNode }
   const [showForm, setShowForm]       = useState(false);
   const [rating, setRating]           = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
-
+  const [reviewName, setReviewName]   = useState("");
   const [reviewText, setReviewText]   = useState("");
   const [submitted, setSubmitted]     = useState(false);
-  const [reviews, setReviews] = useState([
-    { id: 1, text: "Finding a home felt overwhelming at first, but this platform made the entire experience much easier...", rating: 5 },
-    { id: 2, text: "Easy to use, professional, and full of great properties. I found my dream home in just a few days.", rating: 5 },
-    { id: 3, text: "Excellent experience. The platform help me to discover the perfect house for my family.", rating: 5 },
-  ]);
+const [reviews, setReviews] = useState<Review[]>([]);
+  useEffect(() => {
+  const load = async () => {
+    const res = await fetch("/api/get-comments");
+    const data = await res.json();
 
-  const handleSubmitReview = async () => {
+    setReviews(data.comments);
+  };
+
+  load();
+}, []);
+
+ const handleSubmitReview = async () => {
   if (!reviewText.trim() || rating === 0) return;
 
   try {
@@ -39,11 +54,15 @@ export default function LandingBuyer({ listings }: { listings: React.ReactNode }
       }),
     });
 
-    const data = await response.json();
-
     if (!response.ok) {
-      throw new Error(data.error);
+      throw new Error("Error creating comment");
     }
+
+    // volver a cargar comentarios
+    const res = await fetch("/api/get-comments");
+    const data = await res.json();
+
+    setReviews(data.comments);
 
     setReviewText("");
     setRating(0);
@@ -51,7 +70,6 @@ export default function LandingBuyer({ listings }: { listings: React.ReactNode }
 
     setSubmitted(true);
     setTimeout(() => setSubmitted(false), 3000);
-
   } catch (error) {
     console.error(error);
   }
@@ -164,9 +182,9 @@ export default function LandingBuyer({ listings }: { listings: React.ReactNode }
                       <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
                     </svg>
                   </div>
-                  <span className="text-sm font-semibold text-gray-800">{}</span>
+                  <span className="text-sm font-semibold text-gray-800">{reviews[0].firstName} {reviews[0].lastName}</span>
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed">{reviews[0].text}</p>
+                <p className="text-sm text-gray-600 leading-relaxed">{reviews[0].comment}</p>
               </div>
               <div className="flex gap-1 mt-4">
                 {Array.from({ length: reviews[0].rating }).map((_, i) => (
@@ -188,9 +206,9 @@ export default function LandingBuyer({ listings }: { listings: React.ReactNode }
                       <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
                     </svg>
                   </div>
-                  <span className="text-sm font-semibold text-gray-800">{}</span>
+                 <span className="text-sm font-semibold text-gray-800">{reviews[0].firstName} {reviews[0].lastName}</span>
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed">{review.text}</p>
+                <p className="text-sm text-gray-600 leading-relaxed">{review.comment}</p>
                 <div className="flex gap-1 mt-3">
                   {Array.from({ length: review.rating }).map((_, i) => (
                     <svg key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20">
@@ -249,6 +267,8 @@ export default function LandingBuyer({ listings }: { listings: React.ReactNode }
                 </button>
               ))}
             </div>
+
+
 
 
             <label className="block text-sm font-semibold text-gray-700 mb-1">Your Review</label>
