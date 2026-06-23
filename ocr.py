@@ -6,42 +6,62 @@ import numpy as np
 from flask_cors import CORS
 from pdf2image import convert_from_bytes
 import re
+import gc
 
 app = Flask(__name__)
 CORS(app)
+
+# ─────────────────────────────
+# CONFIG
+# ─────────────────────────────
+PDF_DPI = 100          # antes 150. Menos memoria y menos tiempo de OCR.
+BLUR_THRESHOLD = 150
+MIN_READABLE_CHARS = 30
+MIN_CONFIDENCE = 40
+
 
 @app.route('/')
 def home():
     return "Servidor funcionando"
 
 
-def blurry_image(image, threshold=150):
+def blurry_image(image, threshold=BLUR_THRESHOLD):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     score = cv2.Laplacian(gray, cv2.CV_64F).var()
     return score < threshold, score
 
 
-def get_ocr_confidence(gray):
+def get_ocr_text_and_confidence(gray):
+    """
+    Corre tesseract UNA sola vez (en vez de image_to_string + image_to_data
+    por separado) y devuelve tanto el texto como la confianza promedio.
+    Esto reduce a la mitad el tiempo de OCR por imagen/página.
+    """
     data = pytesseract.image_to_data(
         gray,
         lang='spa+eng',
+        config="--oem 3 --psm 6",
         output_type=Output.DICT
     )
 
+    words = []
     confidences = []
 
-    for conf in data['conf']:
+    for word, conf in zip(data['text'], data['conf']):
         try:
             conf = float(conf)
-            if conf > 0:
-                confidences.append(conf)
-        except:
-            pass
+        except (TypeError, ValueError):
+            continue
 
-    if len(confidences) == 0:
-        return 0
+        if conf > 0:
+            confidences.append(conf)
+            if word.strip():
+                words.append(word)
 
-    return sum(confidences) / len(confidences)
+    text = " ".join(words)
+    avg_confidence = sum(confidences) / len(confidences) if confidences else 0
+
+    return text, avg_confidence
 
 
 def process_file(file):
@@ -52,7 +72,7 @@ def process_file(file):
     filename = file.filename.lower()
     texto_documento = ""
 
-    print("Procesando:", file.filename)
+    print("Procesando:", file.filename, flush=True)
 
     # ─────────────────────────────
     # PDF
@@ -60,7 +80,10 @@ def process_file(file):
     if filename.endswith(".pdf"):
 
         pdf_bytes = file.read()
-        pages = convert_from_bytes(pdf_bytes, dpi=150)
+        pages = convert_from_bytes(pdf_bytes, dpi=PDF_DPI)
+
+        # liberamos los bytes crudos del PDF apenas convertimos a páginas
+        del pdf_bytes
 
         for index, page in enumerate(pages):
 
@@ -68,7 +91,7 @@ def process_file(file):
             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
             blurry, score = blurry_image(img)
-            print("blur score", score)
+            print("blur score", score, flush=True)
 
             if blurry:
                 raise Exception(
@@ -76,9 +99,7 @@ def process_file(file):
                 )
 
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
             gray = cv2.equalizeHist(gray)
-
             gray = cv2.threshold(
                 gray,
                 5,
@@ -86,29 +107,31 @@ def process_file(file):
                 cv2.THRESH_BINARY + cv2.THRESH_OTSU
             )[1]
 
-            print("Iniciando OCR PDF")
+            print("Iniciando OCR PDF página", index + 1, flush=True)
 
-            text = pytesseract.image_to_string(
-                gray,
-                lang="spa+eng"
-            )
+            text, confidence = get_ocr_text_and_confidence(gray)
 
-            print("Terminando OCR PDF")
-
-            confidence = get_ocr_confidence(gray)
+            print("Terminando OCR PDF página", index + 1, flush=True)
 
             texto_limpio = re.sub(r'[^A-Za-zÁÉÍÓÚáéíóúÑñ0-9]', '', text)
 
-            print("OCR confidence", confidence)
-            print("readable chars", len(texto_limpio))
+            print("OCR confidence", confidence, flush=True)
+            print("readable chars", len(texto_limpio), flush=True)
 
-            if len(texto_limpio) < 30:
-                print("WARNING: low text length")
+            if len(texto_limpio) < MIN_READABLE_CHARS:
+                print("WARNING: low text length", flush=True)
 
-            if confidence < 40:
-                print("WARNING: low confidence")
+            if confidence < MIN_CONFIDENCE:
+                print("WARNING: low confidence", flush=True)
 
             texto_documento += text + "\n"
+
+            # liberar memoria de la página procesada antes de seguir
+            del img, gray, page
+            gc.collect()
+
+        del pages
+        gc.collect()
 
     # ─────────────────────────────
     # IMAGE
@@ -116,22 +139,20 @@ def process_file(file):
     else:
 
         npimg = np.frombuffer(file.read(), np.uint8)
-
         img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+        del npimg
 
         if img is None:
             raise Exception(f"Could not read {file.filename}")
 
         blurry, score = blurry_image(img)
-        print("blur score", score)
+        print("blur score", score, flush=True)
 
         if blurry:
             raise Exception(f"{file.filename} is blurry")
 
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
         gray = cv2.equalizeHist(gray)
-
         gray = cv2.threshold(
             gray,
             5,
@@ -139,29 +160,25 @@ def process_file(file):
             cv2.THRESH_BINARY + cv2.THRESH_OTSU
         )[1]
 
-        print("Iniciando OCR Imagen")
+        print("Iniciando OCR Imagen", flush=True)
 
-        texto_documento = pytesseract.image_to_string(
-            gray,
-            lang="spa+eng",
-            config="--oem 3 --psm 6"
-        )
+        texto_documento, confidence = get_ocr_text_and_confidence(gray)
 
-        print("Terminando OCR Imagen")
+        print("Terminando OCR Imagen", flush=True)
 
-        confidence = get_ocr_confidence(gray)
-
-        # FIX IMPORTANTE (antes tenías bug con "text")
         texto_limpio = re.sub(r'\s+', ' ', texto_documento).strip()
 
-        print("OCR confidence:", confidence)
-        print("Readable chars:", len(texto_limpio))
+        print("OCR confidence:", confidence, flush=True)
+        print("Readable chars:", len(texto_limpio), flush=True)
 
-        if len(texto_limpio) < 30:
-            print("WARNING: low text length")
+        if len(texto_limpio) < MIN_READABLE_CHARS:
+            print("WARNING: low text length", flush=True)
 
-        if confidence < 40:
-            print("WARNING: low confidence")
+        if confidence < MIN_CONFIDENCE:
+            print("WARNING: low confidence", flush=True)
+
+        del img, gray
+        gc.collect()
 
     return texto_documento
 
@@ -182,9 +199,9 @@ def upload():
         excerpt_file = request.files.get("excerpt")
         dui_file = request.files.get("dui")
 
-        print("DEED:", deed_file)
-        print("EXCERPT:", excerpt_file)
-        print("DUI:", dui_file)
+        print("DEED:", deed_file, flush=True)
+        print("EXCERPT:", excerpt_file, flush=True)
+        print("DUI:", dui_file, flush=True)
 
         deed_text = process_file(deed_file)
         excerpt_text = process_file(excerpt_file)
@@ -198,7 +215,7 @@ def upload():
         })
 
     except Exception as e:
-
+        print("UPLOAD ERROR:", str(e), flush=True)
         return jsonify({
             "success": False,
             "message": str(e)
@@ -207,5 +224,5 @@ def upload():
 
 if __name__ == "__main__":
     import os
-    port = int(os.environ.get("PORT",5000))
+    port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
