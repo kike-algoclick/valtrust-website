@@ -6,7 +6,7 @@ import { X } from "lucide-react";
 import Image from "next/image";
 import LandingNav from "@/components/layout/navbars/landingnav";
 import SellOrBuyPopup from "@/components/layout/selection-popup/Choose";
-
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignUpContent(){
      const { signUp, errors, fetchStatus } = useSignUp();
@@ -28,6 +28,8 @@ export default function SignUpContent(){
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
    const [popupOpen, setPopupOpen] = useState(false);
+   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);  
  
   const isLoading = fetchStatus === "fetching";
 
@@ -60,12 +62,96 @@ export default function SignUpContent(){
     
     
 
-    if(error){
-      setErrorMessage(error.message || "There was an error. Please try again");
-      console.error(JSON.stringify(error, null, 2));
-      return;
-    }
+   if (error) {
+  const clerkError = error as {
+    errors?: {
+      code?: string;
+      message?: string;
+      longMessage?: string;
+    }[];
+    message?: string;
+  };
 
+  const firstError = clerkError.errors?.[0];
+
+  switch (firstError?.code) {
+    // Passwords
+    case "form_password_pwned":
+      setErrorMessage(
+        "For your security, please choose a different password."
+      );
+      break;
+
+    case "form_password_length_too_short":
+      setErrorMessage(
+        "Your password must be at least 8 characters long."
+      );
+      break;
+
+    case "form_password_not_strong_enough":
+      setErrorMessage(
+        "Please choose a stronger password with uppercase letters, lowercase letters, numbers, and special characters."
+      );
+      break;
+
+    // Email
+    case "form_identifier_exists":
+      setErrorMessage(
+        "An account with this email address already exists."
+      );
+      break;
+
+    case "form_param_format_invalid":
+      setErrorMessage(
+        "Please enter a valid email address."
+      );
+      break;
+
+    case "form_param_nil":
+      setErrorMessage(
+        "Please complete all required fields."
+      );
+      break;
+
+    // Verification
+    case "verification_expired":
+      setErrorMessage(
+        "The verification code has expired. Please request a new one."
+      );
+      break;
+
+    case "verification_failed":
+      setErrorMessage(
+        "Invalid verification code. Please try again."
+      );
+      break;
+
+    // Rate limits
+    case "too_many_requests":
+      setErrorMessage(
+        "Too many attempts. Please wait a moment and try again."
+      );
+      break;
+
+    // Generic Clerk API errors
+    case "api_response_error":
+      setErrorMessage(
+        firstError?.message ||
+        "Something went wrong. Please try again."
+      );
+      break;
+
+    default:
+      setErrorMessage(
+        firstError?.message ||
+        clerkError.message ||
+        "Something went wrong. Please try again."
+      );
+      console.error("Unhandled Clerk error:", clerkError);
+  }
+
+  return;
+}
      await signUp.verifications.sendEmailCode();
     setPendingVerification(true);
    }
@@ -176,20 +262,42 @@ export default function SignUpContent(){
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full h-11 px-4 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-[#4ea2ff] text-black"
                 />
+
+
+                <div className="relative">
                 <input
                   value={password}
-                  type="password"
+                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full h-11 px-4 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-[#4ea2ff] text-black"
                 />
+                  <button
+                   type="button"
+                   onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+  </button>
+                </div>
+
+                
+                <div className="relative">
                 <input
                   value={confirmPassword}
-                  type="password"
+                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm password"
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full h-11 px-4 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-[#4ea2ff] text-black"
                 />
+                  <button
+    type="button"
+    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+  >
+    {showConfirmPassword? <EyeOff size={20} /> : <Eye size={20} />}
+  </button>
+                </div>
  
                 <button
                   type="submit"
