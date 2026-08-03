@@ -1,6 +1,6 @@
   "use client";
   import Image from "next/image";
-  import { Menu, X, House, SwatchBook, Gem, PanelRight, Info } from "lucide-react";
+  import { X, House, Gem, PanelRight, Info } from "lucide-react";
   import { useState } from "react";
   import Link from "next/link";
   import { Router } from "next/router";
@@ -47,13 +47,13 @@
             </ul>
           </div>
 
-          <div className="flex md:hidden p-2 w-full items-center justify-center gap-5 text-sm md:text-sm" >
-          <button className="p-3 bg-zinc-200 w-1/2 rounded-lg font-bold">
+          <div className="flex md:hidden p-2 w-full items-center justify-center gap-5 text-xs md:text-sm" >
+          <button className="p-3 bg-zinc-200 w-full rounded-lg font-bold">
           <Link href={"/login"}>
             Sign In
             </Link>
           </button>
-          <button className="p-3 bg-bl-main  w-1/2 rounded-lg text-white font-bold" onClick={onSignUpClick}>
+          <button className="p-3 bg-bl-main  w-full rounded-lg text-white font-bold" onClick={onSignUpClick}>
           
 
             Sign Up
