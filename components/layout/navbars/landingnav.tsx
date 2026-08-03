@@ -19,8 +19,8 @@
             <Image
               src={"/LogosValtrust/valtrust-isologo.png"}
               alt="Logo Image"
-              width={170}
-              height={170}
+              width={200}
+              height={200}
             
             />
             </Link>
