@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { Menu, X, House, Gem, Settings, Landmark, Activity } from "lucide-react";
+import { X, House, Gem, Settings, Landmark, Activity,PanelRight, Info, Store } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
@@ -21,8 +21,8 @@ export default function SellerNav() {
           <Image
             src={"/LogosValtrust/valtrust-isologo.png"}
             alt="Logo Image"
-            width={125}
-            height={125}
+            width={200}
+            height={200}
           />
         </div>
 
@@ -67,9 +67,9 @@ export default function SellerNav() {
             onClick={() => setOpen(!open)}
           >
             {open ? (
-              <X size={35} className="opacity-100 scale-100 translate-y-0" />
+              <X size={35} color="gray" className="opacity-100 scale-100 translate-y-0" />
             ) : (
-              <Menu size={35} className="scale-95 pointer-events-none" />
+              <PanelRight size={35} color="gray" className="scale-95 pointer-events-none" />
             )}
           </button>
         </div>
@@ -94,33 +94,51 @@ export default function SellerNav() {
         </div>
       </div>
 
-      {open && (
-        <div className=" flex text-black flex-col md:hidden w-50 p-6 fixed bg-wh-main items-center top-5 right-4 gap-20 text-md z-10 rounded-md shadow-2xl">
+    
+        <div className= {`  ${open ? "" : "translate-x-full"
+
+          } transform transition-transform duration-300 ease-in-out flex text-black flex-col md:hidden w-50 p-10 fixed bg-wh-main items-center  h-screen top-0 right-0
+           gap-20 text-xl z-10   shadow-lg  border-white mt-20 overflow-scroll `}>
            
-          <div className="flex flex-col items-center text-left ">
+          <div className="flex flex-col items-center text-left gap-8 overflow-scroll ">
+
             <div className="w-full flex gap-2 justify-center items-center ">
-              <House size={30} />
+              <House size={30} color="gray" />
               <h3 className="w-full flex flex-col">Home</h3>
             </div>
+            <hr className=" bg-gray-200 w-full" />
             <div className="w-full flex gap-2 justify-center items-center">
-              <Landmark size={30} />
+              <Store size={30} color="gray" />
               <h3 className="w-full flex flex-col">Marketplace</h3>
             </div>
+            <hr className=" bg-gray-200 w-full" />
             <div className="w-full flex gap-2 justify-center items-center">
-              <Activity size={30} />
+              <Activity size={30} color="gray"/>
               <h3 className="w-full flex flex-col">Valuation</h3>
             </div>
+            <hr className=" bg-gray-200 w-full" />
             <div className="w-full flex gap-2 justify-center items-center">
-              <Gem size={30} />
+              <Gem size={30} color="gray" />
               <h3 className="w-full flex flex-col">Premium</h3>
             </div>
-             <div className="w-full flex gap-2 justify-center items-center">
-              <Settings size={30} />
+            <hr className=" bg-gray-200 w-full" />
+            <div className="w-full flex gap-2 justify-center items-center">
+              <Info size={30} color="gray" />
+              <h3 className="w-full flex flex-col">About Us</h3>
+            </div>
+            <hr className=" bg-gray-200 w-full" />
+
+            <div className="bg-gr-main p-2 rounded-lg ">
+          <div className="w-full  text-white text-bold text-lg flex gap-2 justify-center items-center  rounded-lg">
+              <Settings size={40} color="white" className="" />
               <h3 className="w-full flex flex-col">Settings</h3>
             </div>
           </div>
+             
+          </div>
+          
         </div>
-      )}
+      
     </nav>
   );
 }
